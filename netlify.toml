@@ -1,0 +1,13 @@
+[build]
+# Directory containing the serverless functions
+functions = "netlify/functions"
+
+[dev]
+# Command to start your Vite development server
+command = "npm run dev"
+# Port your Vite server runs on
+targetPort = 5173 # Default Vite port, adjust if different
+# Port the Netlify CLI proxy will run on
+port = 8888
+# Make sure the Netlify CLI handles function requests
+framework = "#custom"

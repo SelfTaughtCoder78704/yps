@@ -1,0 +1,830 @@
+#root {
+  padding: 0; /* Ensure root element has no padding */
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: #333;
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  scroll-behavior: smooth; /* Enable smooth scrolling */
+}
+
+body {
+  margin: 0; /* Keep margin reset */
+  /* display: flex; - Removed */
+  /* place-items: center; - Removed */
+  /* min-width: 320px; - Removed (handled by viewport/App) */
+  /* min-height: 100vh; - Removed (App content will dictate height) */
+}
+
+.App {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Set scroll margin for sticky header offset */
+#hero,
+section {
+  scroll-margin-top: 120px; /* Adjust this value as needed */
+}
+
+section {
+  padding: 4rem 2rem;
+  border-bottom: 1px solid #e0e0e0; /* Separator lines */
+}
+
+section:last-child {
+  border-bottom: none;
+}
+
+h1 {
+  font-size: 2.5em; /* Adjusted from 3.2em */
+  line-height: 1.1;
+}
+
+.sub-headline {
+  font-size: 1.1em;
+  color: #bbb; /* Lighter gray */
+  margin-bottom: 2rem;
+}
+
+/* Hero Section Specific Styles */
+.hero-section {
+  /* background-color: #333; - Replaced by image */
+  border-radius: 8px;
+  margin-bottom: 2rem; /* Add space below hero */
+  padding: 4rem 2rem; /* Ensure padding is sufficient */
+  position: relative; /* Needed for pseudo-element overlay */
+  background-image: url('./assets/beforeAfter.png');
+  background-size: cover; /* Cover the entire section */
+  background-position: center center; /* Center the image */
+  color: #fff; /* Ensure text is white for contrast */
+  text-align: left; /* <<< Align text to the left for testing */
+}
+
+/* Add overlay for better text contrast */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent overlay */
+  border-radius: 8px; /* Match parent border-radius */
+  z-index: 1; /* Place overlay below content */
+}
+
+/* Ensure content is above the overlay */
+.hero-section h1,
+.hero-section .sub-headline,
+.hero-section .quote-widget,
+.hero-section .hero-text-content,
+.hero-section .slogan {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-section h1 {
+    color: #ffffff; /* Set to pure white */
+    /* Inherits font-size/line-height from general h1 rule or defaults */
+}
+
+.hero-text-content {
+    max-width: 40%;
+    margin-bottom: 2rem;
+}
+
+.hero-section .sub-headline {
+    font-weight: 400;
+    color: #ffffff; /* Set to pure white */
+    margin-bottom: 1rem;
+    font-size: 1.1em;
+}
+
+.hero-section .slogan {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #ffffff; /* Set to pure white */
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.quote-widget {
+  background-color: #f8f9fa; /* Light gray background */
+  padding: 2rem;
+  border-radius: 8px;
+  display: block; /* Make it a block element */
+  margin: 2rem auto 0 auto; /* Center horizontally, add top margin */
+  max-width: 450px; /* Limit width for centering */
+  text-align: left;
+  border: 1px solid #dee2e6; /* Light border */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Add transition */
+}
+
+/* Style for highlighting the quote widget border */
+.quote-widget.highlight-border {
+  border-color: #ffffff; 
+  border-width: 2px; 
+  /* Updated shadow for more glow and spread */
+  box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.6); 
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #495057; /* Darker label color */
+}
+
+.form-group select {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #ced4da; /* Standard light border */
+  background-color: #fff; /* White select background */
+  color: #495057; /* Dark text in select */
+  font-size: 1em;
+}
+
+.quote-widget button {
+  background-color: #7ca831; /* Updated ACTION color */
+  color: white;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%; /* Make button full width */
+  margin-top: 1rem; /* Space above button */
+}
+
+.quote-widget button:hover {
+  background-color: #638627; /* Darker green shade for hover */
+}
+
+.tooltip {
+  font-size: 0.9em;
+  color: #6c757d; /* Medium gray for tooltip */
+  margin-top: 0.8rem;
+  text-align: center;
+}
+
+.price-display {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #e9ecef; /* Slightly darker gray for price */
+  border-radius: 4px;
+  text-align: center;
+  border: 1px solid #ced4da;
+}
+
+.price-display p {
+  margin: 0.5rem 0;
+  color: #495057; /* Darker text */
+}
+
+.price-display h2 {
+  margin: 0.5rem 0;
+  color: #7ca831; /* Updated ACTION color */
+  font-size: 1.8em;
+}
+
+/* Basic styles for other sections (placeholders) */
+#how-it-works h2,
+#pricing h2,
+#why-yps h2,
+#reviews h2,
+#faq h2,
+#footer-cta h2 {
+  margin-bottom: 2rem;
+}
+
+/* How It Works Section Styles */
+.how-it-works-cards {
+  display: flex;
+  justify-content: space-around; /* Distribute cards evenly */
+  gap: 1.5rem; /* Space between cards */
+  flex-wrap: wrap; /* Allow cards to wrap on smaller screens */
+}
+
+.how-it-works-cards .card {
+  background-color: #fff; /* Card background */
+  padding: 1.5rem;
+  border-radius: 8px;
+  flex: 1; /* Allow cards to grow */
+  min-width: 250px; /* Minimum width before wrapping */
+  max-width: 300px; /* Maximum width */
+  text-align: center;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
+  border: 1px solid #e0e0e0; /* Light border */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Add transitions */
+}
+
+.how-it-works-cards .card:hover {
+  transform: translateY(-3px); /* Lift effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
+}
+
+/* Remove or comment out old placeholder styles */
+/*
+.how-it-works-cards .icon-placeholder {
+  font-size: 2em;
+  margin-bottom: 1rem;
+  color: #888; 
+}
+*/
+
+/* Style the new icon wrapper */
+.how-it-works-cards .icon-wrapper {
+  text-align: center; /* Center the icon within the wrapper */
+  margin-bottom: 1rem;
+  color: #464d51; /* Updated color */
+}
+
+.how-it-works-cards h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1.3em;
+  color: #333; /* Dark heading */
+}
+
+.how-it-works-cards p {
+  font-size: 1em;
+  color: #555; /* Darker paragraph text */
+}
+
+/* Pricing Section Styles */
+.pricing-table-container {
+  max-width: 600px; /* Limit table width */
+  margin: 0 auto; /* Center the table container */
+  background-color: #fff; /* Background for the container */
+  padding: 2rem;
+  border-radius: 8px;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
+  border: 1px solid #e0e0e0; /* Light border */
+}
+
+.pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.pricing-table th,
+.pricing-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee; /* Lighter separator lines */
+  color: #555; /* Darker text */
+}
+
+.pricing-table th {
+  background-color: #f8f9fa; /* Light header background */
+  color: #333; /* Dark header text */
+  font-weight: bold;
+}
+
+/* .pricing-table tr:last-child td { - No longer needed with new borders */
+/*  border-bottom: none; */
+/* } */
+
+.pricing-table td:first-child {
+  text-align: center; /* Center dog count */
+  font-weight: bold;
+  color: #333;
+}
+
+.pricing-note {
+    font-size: 0.9em;
+    color: #6c757d; /* Medium gray */
+    margin-top: 1rem;
+    margin-bottom: 1.5rem; /* Add space before banner */
+    text-align: center;
+}
+
+.pricing-banner {
+  background-color: #7ca831; /* Updated ACTION color */
+  color: #fff;
+  padding: 1rem;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 1.5rem;
+}
+
+.pricing-banner strong {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
+/* Why YPS Section Styles */
+.why-yps-points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+  gap: 2rem; /* Space between points */
+  text-align: left; /* Align text within each point */
+}
+
+.why-yps-points .point {
+  background-color: #fff; /* Point background */
+  padding: 1.5rem;
+  border-radius: 8px;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
+  border: 1px solid #e0e0e0; /* Light border */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Add transitions */
+}
+
+.why-yps-points .point:hover {
+  transform: translateY(-3px); /* Lift effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
+}
+
+/* Remove or comment out old placeholder styles */
+/*
+.why-yps-points .icon-placeholder {
+  font-size: 1.8em; 
+  margin-bottom: 1rem;
+  color: #888; 
+  height: 40px; 
+  line-height: 40px;
+  text-align: center;
+  background-color: #f0f0f0; 
+  border-radius: 4px;
+  display: inline-block; 
+  width: 100%;
+}
+*/
+
+/* Style the new icon wrapper */
+.why-yps-points .icon-wrapper {
+  text-align: center; /* Center the icon within the wrapper */
+  margin-bottom: 1rem;
+  color: #464d51; /* Updated color */
+}
+
+.why-yps-points h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1.3em;
+  text-align: center; /* Center headline within point */
+  color: #333; /* Dark heading */
+}
+
+.why-yps-points p {
+  font-size: 1em;
+  color: #555; /* Darker paragraph text */
+  line-height: 1.6;
+}
+
+/* Reviews Section Styles */
+@keyframes fadeInReview {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.review-carousel {
+  max-width: 700px; /* Limit width */
+  margin: 0 auto; /* Center */
+  background-color: #fff; /* Background */
+  padding: 2rem;
+  border-radius: 8px;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
+  border: 1px solid #e0e0e0; /* Light border */
+  position: relative; /* Needed for absolute positioning of buttons if desired */
+  text-align: center;
+}
+
+.review-content {
+  margin-bottom: 1.5rem; /* Space before navigation */
+  min-height: 150px; /* Give some space for content */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: fadeInReview 0.4s ease-out; /* Apply the animation */
+}
+
+.review-content .stars {
+  color: #f0c040; /* Gold-ish color for stars - Keep */
+  margin-bottom: 0.8rem;
+  display: flex; /* Align stars horizontally */
+  justify-content: center; /* Center the stars */
+  gap: 4px; /* Small gap between stars */
+}
+
+.review-content .text {
+  font-style: italic;
+  font-size: 1.1em;
+  color: #444; /* Darker text */
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.review-content .author {
+  font-size: 1em;
+  color: #666; /* Medium gray */
+  font-weight: bold;
+}
+
+.review-navigation {
+  display: flex;
+  justify-content: center; /* Center buttons */
+  gap: 1rem;
+}
+
+.review-navigation button {
+  background-color: #7ca831; /* Updated ACTION color */
+  color: #ffffff; /* White arrow */
+  border: none; /* Remove border */
+  border-radius: 50%; 
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Adjusted transition */
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 0; 
+}
+
+.review-navigation button:hover {
+  background-color: #638627; /* Darker green hover */
+}
+
+/* FAQ Section Styles */
+.faq-accordion {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  background-color: #fff;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+.faq-question {
+  background-color: transparent;
+  border: none;
+  padding: 1.25rem 1.5rem;
+  width: 100%;
+  text-align: left;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-question:hover {
+  background-color: #f8f9fa;
+}
+
+.faq-icon {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.faq-icon.open {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  padding: 1.25rem 1.5rem; /* Updated: Added top padding */
+  background-color: #fff; 
+  border-top: 1px solid #e0e0e0; 
+}
+
+.faq-answer p {
+  margin: 0;
+  font-size: 1em;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Footer CTA Section Styles */
+.footer-cta-section {
+  /* background-color: #f8f9fa; - Replaced by image */
+  padding: 4rem 2rem; /* Increased padding */
+  border-top: 1px solid #e0e0e0; 
+  position: relative; /* For overlay */
+  background-image: url('/src/assets/dog.png'); /* Try path relative to project root */
+  background-size: cover;
+  background-position: center center;
+  text-align: center; /* Restore center alignment */
+}
+
+/* Add overlay for text contrast */
+.footer-cta-section::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.55); /* Adjust overlay darkness as needed */
+  z-index: 1;
+}
+
+/* Remove old flex layout styles */
+/* .footer-cta-content { ... } */
+/* .footer-text-content { ... } */
+/* .footer-image-content { ... } */
+/* .footer-image-content img { ... } */
+
+/* Ensure content is above overlay and set text colors */
+.footer-cta-section h2,
+.footer-cta-section .offer,
+.footer-cta-section .cta-options {
+  position: relative;
+  z-index: 2;
+}
+
+.footer-cta-section h2 {
+  /* margin-bottom: 1rem; */ /* Handled by general h2 */
+  /* font-size: 2em; */ /* Handled by general h2 */
+  color: #ffffff; /* White text */
+}
+
+.footer-cta-section .offer {
+  font-size: 1.3em;
+  color: #eee; /* Light gray text */
+  margin-bottom: 2rem;
+}
+
+.cta-options p {
+  font-size: 1.1em;
+  color: #ddd; /* Lighter gray text */
+  margin: 0.8rem 0;
+}
+
+.cta-options strong {
+  background-color: rgba(255, 255, 255, 0.2); /* Lighter highlight for dark bg */
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  color: #fff; /* White text in highlight */
+}
+
+.cta-options a {
+  color: #f0f0f0; /* Very light gray/off-white link */
+  text-decoration: none;
+  font-weight: 500; 
+}
+
+/* Keep button text white rule */
+.cta-options a.cta-button {
+  color: #ffffff !important; 
+  text-decoration: none; 
+}
+
+.cta-options a:hover {
+  text-decoration: underline;
+  color: #ffffff; /* Brighten link on hover */
+}
+
+.cta-options a.cta-button:hover {
+  text-decoration: none; 
+}
+
+.cta-button {
+  background-color: #7ca831; 
+  /* color: white; - Already set above */
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.cta-button:hover {
+  background-color: #638627; /* Darker green shade for hover */
+}
+
+/* Logo Styles */
+.app-header {
+  padding: 1rem 2rem; /* Added horizontal padding (2rem) */
+  margin-bottom: 2rem; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  border-bottom: 1px solid #e0e0e0; /* Adjusted border color for light theme */
+  
+  /* Sticky Header Styles */
+  position: sticky;
+  top: 0; /* Stick to the top */
+  background-color: #ffffff; /* Add background to prevent content showing through */
+  z-index: 100; /* Ensure header stays on top of other content */
+  width: 100%; /* Ensure it spans the full width */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.app-logo {
+  max-height: 80px; /* Increased logo size */
+  width: auto;
+  display: block; /* Ensure img is block for centering/margin */
+}
+
+.logo-link {
+  text-decoration: none; /* Remove underline from logo link */
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column; /* Stack logo and text vertically */
+  align-items: center; /* Center items horizontally */
+}
+
+.logo-text {
+  font-size: 0.75em; /* Smaller text size */
+  color: #7ca831; /* Updated color */
+  font-weight: 700; /* Increased font weight */
+  margin-top: 0; /* Small space between logo and text */
+  line-height: 1; /* Adjust line height */
+}
+
+/* Navigation Styles */
+.main-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex; /* Align links horizontally */
+  gap: 1.5rem; /* Space between links */
+}
+
+.main-nav a {
+  color: #555; /* Darker gray for nav links */
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.main-nav a:hover,
+.main-nav a:focus {
+  color: #7ca831; /* Updated hover/focus color */
+  text-decoration: underline;
+}
+
+/* Remove default Vite styles if they conflict */
+/* #root { - Removed empty rule */
+  /* Override default max-width if needed */
+/* } - Removed empty rule */
+
+/* --- Responsive Adjustments --- */
+
+@media (max-width: 768px) {
+  /* Adjust main App container padding */
+  .App {
+    padding: 1rem; /* Reduce padding for mobile */
+  }
+
+  /* Header adjustments for mobile */
+  .app-header {
+    flex-direction: column; /* Stack logo/text and nav vertically */
+    padding: 1rem; /* Adjust padding */
+  }
+  .main-nav ul {
+    margin-top: 1rem; /* Space between logo and nav */
+    gap: 1rem; /* Reduce gap between nav items */
+    flex-wrap: wrap; /* Allow nav items to wrap */
+    justify-content: center; /* Center wrapped nav items */
+  }
+  .main-nav a {
+    font-size: 0.9em; /* Slightly smaller nav text */
+  }
+
+  /* Hero adjustments for mobile */
+  .hero-section {
+    text-align: center; /* Center text content */
+    padding: 3rem 1rem; /* Adjust padding */
+  }
+  .hero-section::before { /* Target overlay */
+    background-color: rgba(0, 0, 0, 0.7); /* Darker overlay for mobile */
+  }
+  .hero-text-content {
+    max-width: 90%; /* Make text container wider */
+    margin-left: auto; /* Center the container */
+    margin-right: auto;
+  }
+
+  .quote-widget {
+    max-width: 90%; /* Ensure quote widget fits */
+  }
+
+  /* Card adjustments for mobile */
+  .how-it-works-cards,
+  .why-yps-points {
+    flex-direction: column; /* Stack cards vertically */
+    gap: 1rem;
+  }
+  .how-it-works-cards .card,
+  .why-yps-points .point {
+    max-width: 100%; /* Allow cards to take full width */
+    min-width: unset;
+  }
+
+  /* Reduce general section padding */
+  section {
+    padding: 3rem 1rem;
+    /* Apply same scroll margin on mobile, or adjust if header height changes */
+    scroll-margin-top: 120px; 
+  }
+}
+
+/* Emphasize section headings */
+h2 {
+  font-size: 2.2em; /* Slightly larger */
+  font-weight: 600; /* Slightly bolder */
+  margin-bottom: 2.5rem; /* Adjust spacing if needed */
+  color: #333;
+}
+
+/* Optionally add specific overrides if h2 is used differently elsewhere */
+
+/* --- Site Footer Styles --- */
+
+.site-footer {
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 0.9em;
+  color: #6c757d; /* Medium gray text */
+  border-top: 1px solid #e0e0e0; /* Separator from content above */
+  margin-top: 2rem; /* Space above footer */
+}
+
+.site-footer p {
+  margin: 0.5rem 0;
+}
+
+.site-footer a {
+  color: #464d51; /* Use secondary accent color */
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+  color: #7ca831; /* Use primary green on hover */
+}
