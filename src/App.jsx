@@ -11,9 +11,18 @@ import FooterCTA from './components/FooterCTA';
 import SiteFooter from './components/SiteFooter';
 
 // Simple message component
-const Message = ({ message }) => (
+const Message = ({ message, onClear }) => (
   <section style={{ padding: '40px', textAlign: 'center' }}>
     <p>{message}</p>
+    {onClear && (
+      <button
+        className="cta-button"
+        style={{ marginTop: '20px' }}
+        onClick={onClear}
+      >
+        Try Again / Back to Quote
+      </button>
+    )}
   </section>
 );
 
@@ -65,6 +74,15 @@ function App() {
     }
   }, []); // Run only once on mount
 
+  // Function to clear message/status
+  const clearStatus = () => {
+    setMessage('');
+    setSuccess(false);
+    setSessionId('');
+    // Optionally clear URL params again if needed
+    window.history.replaceState(null, '', window.location.pathname);
+  }
+
   // Function to handle Manage Billing button click
   const handleManageBilling = async () => {
     if (!sessionId) {
@@ -95,7 +113,7 @@ function App() {
   if (success && sessionId) {
     content = <SuccessDisplay onManageBilling={handleManageBilling} />;
   } else if (message) {
-    content = <Message message={message} />;
+    content = <Message message={message} onClear={clearStatus} />;
   } else {
     // Main app content
     content = (
