@@ -16,6 +16,5 @@ framework = "#custom"
 node_bundler = "esbuild"
 
 # Add special handling for the webhook endpoint
-[[functions."webhook-handler"]]
-[functions."webhook-handler".environment]
-PRESERVE_BODY = "true"
+[functions.webhook-handler]
+environment = {PRESERVE_BODY = "true"}
