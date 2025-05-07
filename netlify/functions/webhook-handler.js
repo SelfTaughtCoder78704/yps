@@ -121,7 +121,7 @@ export const handler = async (event) => {
           status: subscription.status,
           serviceFrequency: checkoutSession.metadata?.frequency || 'weekly',
           dogCount: checkoutSession.metadata?.dogs || '1',
-          serviceAddress: checkoutSession.shipping?.address || {},
+          serviceAddress: customer.shipping?.address || {},
           nextServiceDate: calculateNextServiceDate(checkoutSession.metadata?.frequency),
           currentPeriodEnd: safeISODate(subscription.current_period_end),
           created: new Date().toISOString()
@@ -138,8 +138,6 @@ export const handler = async (event) => {
         // 3. Schedule first cleaning service
         // 4. Add to your service routing system
 
-        console.log('Session shipping data:', JSON.stringify(checkoutSession.shipping));
-        console.log('Customer shipping data:', JSON.stringify(customer.shipping));
       } catch (error) {
         console.error('Error processing checkout session:', error);
       }
