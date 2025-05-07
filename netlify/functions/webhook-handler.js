@@ -99,6 +99,17 @@ export const handler = async (event) => {
           checkoutSession.customer
         );
 
+        // Safely convert Unix timestamp to ISO string
+        const safeISODate = (unixTimestamp) => {
+          if (!unixTimestamp) return new Date().toISOString();
+          try {
+            return new Date(unixTimestamp * 1000).toISOString();
+          } catch (e) {
+            console.error('Invalid date conversion:', e.message);
+            return new Date().toISOString();
+          }
+        };
+
         // Extract service details
         const customerData = {
           id: customer.id,
@@ -112,7 +123,7 @@ export const handler = async (event) => {
           dogCount: checkoutSession.metadata?.dogs || '1',
           serviceAddress: checkoutSession.shipping?.address || {},
           nextServiceDate: calculateNextServiceDate(checkoutSession.metadata?.frequency),
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000).toISOString(),
+          currentPeriodEnd: safeISODate(subscription.current_period_end),
           created: new Date().toISOString()
         };
 
@@ -158,43 +169,49 @@ export const handler = async (event) => {
 
 // Helper function to calculate next service date based on frequency
 function calculateNextServiceDate(frequency) {
-  const today = new Date();
-  const nextDate = new Date(today);
+  try {
+    const today = new Date();
+    const nextDate = new Date(today);
 
-  switch (frequency) {
-    case '2w': { // twice weekly
-      // Pick next Monday and Thursday
-      const day = today.getDay(); // 0 = Sunday, 1 = Monday, ...
-      if (day < 1) { // Sunday
-        nextDate.setDate(today.getDate() + 1); // Monday
-      } else if (day < 4) { // Monday-Wednesday
-        nextDate.setDate(today.getDate() + (4 - day)); // Next Thursday
-      } else if (day < 6) { // Thursday-Friday
-        nextDate.setDate(today.getDate() + (8 - day)); // Next Monday
-      } else { // Saturday
-        nextDate.setDate(today.getDate() + 2); // Monday
+    switch (frequency) {
+      case '2w': { // twice weekly
+        // Pick next Monday and Thursday
+        const day = today.getDay(); // 0 = Sunday, 1 = Monday, ...
+        if (day < 1) { // Sunday
+          nextDate.setDate(today.getDate() + 1); // Monday
+        } else if (day < 4) { // Monday-Wednesday
+          nextDate.setDate(today.getDate() + (4 - day)); // Next Thursday
+        } else if (day < 6) { // Thursday-Friday
+          nextDate.setDate(today.getDate() + (8 - day)); // Next Monday
+        } else { // Saturday
+          nextDate.setDate(today.getDate() + 2); // Monday
+        }
+        break;
       }
-      break;
-    }
-    case 'bi': { // bi-weekly
-      // Every other Monday
-      nextDate.setDate(today.getDate() + ((8 - today.getDay()) % 7) + 7);
-      break;
-    }
-    case 'mo': { // monthly
-      // First Monday of next month
-      nextDate.setMonth(today.getMonth() + 1);
-      nextDate.setDate(1);
-      while (nextDate.getDay() !== 1) {
-        nextDate.setDate(nextDate.getDate() + 1);
+      case 'bi': { // bi-weekly
+        // Every other Monday
+        nextDate.setDate(today.getDate() + ((8 - today.getDay()) % 7) + 7);
+        break;
       }
-      break;
+      case 'mo': { // monthly
+        // First Monday of next month
+        nextDate.setMonth(today.getMonth() + 1);
+        nextDate.setDate(1);
+        while (nextDate.getDay() !== 1) {
+          nextDate.setDate(nextDate.getDate() + 1);
+        }
+        break;
+      }
+      default: { // weekly (1w)
+        // Next Monday
+        nextDate.setDate(today.getDate() + ((8 - today.getDay()) % 7));
+      }
     }
-    default: { // weekly (1w)
-      // Next Monday
-      nextDate.setDate(today.getDate() + ((8 - today.getDay()) % 7));
-    }
+
+    return nextDate.toISOString().split('T')[0];
+  } catch (error) {
+    console.error('Error calculating next service date:', error);
+    // Return today's date as a fallback
+    return new Date().toISOString().split('T')[0];
   }
-
-  return nextDate.toISOString().split('T')[0];
 } 
