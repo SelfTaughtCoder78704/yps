@@ -137,6 +137,9 @@ export const handler = async (event) => {
         // 2. Send welcome email
         // 3. Schedule first cleaning service
         // 4. Add to your service routing system
+
+        console.log('Session shipping data:', JSON.stringify(checkoutSession.shipping));
+        console.log('Customer shipping data:', JSON.stringify(customer.shipping));
       } catch (error) {
         console.error('Error processing checkout session:', error);
       }
