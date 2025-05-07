@@ -3,7 +3,12 @@ import Stripe from 'stripe';
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // This is your Stripe CLI webhook secret for testing
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_c0b9fdcd72398e29418ad30d95b8a96f59f19b4c1a4b6656cb2ec084916a0bce';
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+// Check if webhook secret is configured
+if (!endpointSecret) {
+  console.error('STRIPE_WEBHOOK_SECRET environment variable is not set!');
+}
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -29,6 +34,10 @@ export const handler = async (event) => {
     console.log('Webhook received. Signature:', sig ? 'Present' : 'Missing');
 
     // Verify the event came from Stripe
+    if (!endpointSecret) {
+      throw new Error('Webhook secret not configured. Please set STRIPE_WEBHOOK_SECRET environment variable.');
+    }
+
     stripeEvent = stripe.webhooks.constructEvent(
       rawBody,
       sig,
@@ -63,7 +72,7 @@ export const handler = async (event) => {
   };
 
   switch (stripeEvent.type) {
-    case 'checkout.session.completed':
+    case 'checkout.session.completed': {
       const checkoutSession = stripeEvent.data.object;
       console.log('Checkout completed!', checkoutSession.id);
 
@@ -109,8 +118,9 @@ export const handler = async (event) => {
         console.error('Error processing checkout session:', error);
       }
       break;
+    }
 
-    case 'invoice.paid':
+    case 'invoice.paid': {
       const invoice = stripeEvent.data.object;
       console.log('Invoice paid:', invoice.id);
 
@@ -119,10 +129,12 @@ export const handler = async (event) => {
       // 2. Schedule next cleaning service
       // 3. Send receipt and confirmation
       break;
+    }
 
     // Handle other event types
-    default:
+    default: {
       console.log(`Received event: ${stripeEvent.type}`);
+    }
   }
 
   // Return a 200 response to acknowledge receipt of the event
@@ -138,7 +150,7 @@ function calculateNextServiceDate(frequency) {
   const nextDate = new Date(today);
 
   switch (frequency) {
-    case '2w': // twice weekly
+    case '2w': { // twice weekly
       // Pick next Monday and Thursday
       const day = today.getDay(); // 0 = Sunday, 1 = Monday, ...
       if (day < 1) { // Sunday
@@ -151,11 +163,13 @@ function calculateNextServiceDate(frequency) {
         nextDate.setDate(today.getDate() + 2); // Monday
       }
       break;
-    case 'bi': // bi-weekly
+    }
+    case 'bi': { // bi-weekly
       // Every other Monday
       nextDate.setDate(today.getDate() + ((8 - today.getDay()) % 7) + 7);
       break;
-    case 'mo': // monthly
+    }
+    case 'mo': { // monthly
       // First Monday of next month
       nextDate.setMonth(today.getMonth() + 1);
       nextDate.setDate(1);
@@ -163,9 +177,11 @@ function calculateNextServiceDate(frequency) {
         nextDate.setDate(nextDate.getDate() + 1);
       }
       break;
-    default: // weekly (1w)
+    }
+    default: { // weekly (1w)
       // Next Monday
       nextDate.setDate(today.getDate() + ((8 - today.getDay()) % 7));
+    }
   }
 
   return nextDate.toISOString().split('T')[0];
