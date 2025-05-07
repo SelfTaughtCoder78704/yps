@@ -3,12 +3,15 @@ import { Buffer } from 'node:buffer';
 /* global process */
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// This is your Stripe CLI webhook secret for testing
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+// Use either production or development webhook secret based on environment
+const isProd = process.env.CONTEXT === 'production' || process.env.NODE_ENV === 'production';
+const endpointSecret = isProd
+  ? process.env.STRIPE_WEBHOOK_SECRET_PROD
+  : process.env.STRIPE_WEBHOOK_SECRET;
 
 // Check if webhook secret is configured
 if (!endpointSecret) {
-  console.error('STRIPE_WEBHOOK_SECRET environment variable is not set!');
+  console.error(`${isProd ? 'Production' : 'Development'} webhook secret is not set!`);
 }
 
 export const handler = async (event) => {
