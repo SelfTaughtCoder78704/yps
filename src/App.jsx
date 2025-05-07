@@ -9,6 +9,7 @@ import Reviews from './components/Reviews';
 import FAQ from './components/FAQ';
 import FooterCTA from './components/FooterCTA';
 import SiteFooter from './components/SiteFooter';
+import AdminView from './components/AdminView';
 
 // Simple message component
 const Message = ({ message, onClear }) => (
@@ -49,28 +50,32 @@ function App() {
     { href: '#faq', label: 'FAQ' },
   ];
 
-  // State for checkout status
+  // State for checkout status and admin view
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
   const [sessionId, setSessionId] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Check URL params on initial load
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
+
+    // Check for admin route
+    if (query.get('admin') === 'true') {
+      setIsAdmin(true);
+      return; // Don't process other params if in admin mode
+    }
+
     if (query.get('success')) {
       setSuccess(true);
       setSessionId(query.get('session_id'));
       setMessage(''); // Clear any potential cancelled message
-      // Clear query params from URL? Optional, can be complex.
-      // window.history.replaceState(null, '', window.location.pathname);
     }
     if (query.get('canceled')) {
       setSuccess(false);
       setMessage(
         "Order canceled. You can recalculate your price and checkout when ready."
       );
-      // Clear query params from URL? Optional.
-      // window.history.replaceState(null, '', window.location.pathname);
     }
   }, []); // Run only once on mount
 
@@ -80,6 +85,12 @@ function App() {
     setSuccess(false);
     setSessionId('');
     // Optionally clear URL params again if needed
+    window.history.replaceState(null, '', window.location.pathname);
+  }
+
+  // Exit admin mode
+  const exitAdmin = () => {
+    setIsAdmin(false);
     window.history.replaceState(null, '', window.location.pathname);
   }
 
@@ -110,7 +121,18 @@ function App() {
 
   // Render based on state
   let content;
-  if (success && sessionId) {
+
+  if (isAdmin) {
+    content = (
+      <>
+        <div className="admin-header">
+          <h1>YPS Admin Dashboard</h1>
+          <button className="back-button" onClick={exitAdmin}>Exit Admin</button>
+        </div>
+        <AdminView />
+      </>
+    );
+  } else if (success && sessionId) {
     content = <SuccessDisplay onManageBilling={handleManageBilling} />;
   } else if (message) {
     content = <Message message={message} onClear={clearStatus} />;
@@ -131,25 +153,27 @@ function App() {
 
   return (
     <div className="App">
-      <header className="app-header">
-        <a href="#hero" className="logo-link">
-          <div className="logo-container">
-            <img src={logo} alt="YPS Yard Poop Service Logo" className="app-logo" />
-            <span className="logo-text">Yard Poop Service</span>
-          </div>
-        </a>
-        <nav className="main-nav">
-          <ul>
-            {navLinks.map(link => (
-              <li key={link.href}>
-                <a href={link.href}>{link.label}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </header>
+      {!isAdmin && (
+        <header className="app-header">
+          <a href="#hero" className="logo-link">
+            <div className="logo-container">
+              <img src={logo} alt="YPS Yard Poop Service Logo" className="app-logo" />
+              <span className="logo-text">Yard Poop Service</span>
+            </div>
+          </a>
+          <nav className="main-nav">
+            <ul>
+              {navLinks.map(link => (
+                <li key={link.href}>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </header>
+      )}
       {content}
-      {!(success || message) && <SiteFooter />}
+      {!(success || message || isAdmin) && <SiteFooter />}
     </div>
   );
 }

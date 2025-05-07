@@ -33,69 +33,102 @@ function Hero() {
   const [frequency, setFrequency] = useState('1w'); // Default to Once a week
   const [quote, setQuote] = useState({ weekly: 0, monthly: 0 });
   const [showPrice, setShowPrice] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   // Recalculate quote whenever dogs or frequency changes
   useEffect(() => {
     const newQuote = calculateQuote({ dogs, freq: frequency });
     setQuote(newQuote);
-    // We don't automatically show the price here, 
-    // only update the calculated value.
-  }, [dogs, frequency]); // Add dependencies
+  }, [dogs, frequency]);
 
   const handleDogChange = (e) => {
     const numDogs = parseInt(e.target.value, 10);
     if (!isNaN(numDogs)) {
       setDogs(numDogs);
-      // setShowPrice(false); // Removed: Recalculation is automatic
     }
   };
 
   const handleFrequencyChange = (e) => {
     setFrequency(e.target.value);
-    // setShowPrice(false); // Removed: Recalculation is automatic
   };
 
   // Button click now just reveals the already calculated price
   const handleGetPrice = (e) => {
     e.preventDefault();
-    // const newQuote = calculateQuote({ dogs, freq: frequency }); // Removed: Handled by useEffect
-    // setQuote(newQuote); // Removed: Handled by useEffect
     setShowPrice(true);
   };
 
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    if (emailError) setEmailError('');
+  };
+
+  // Validate email
+  const validateEmail = () => {
+    if (!email.trim()) {
+      setEmailError("Email address is required");
+      return false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError("Please enter a valid email address");
+      return false;
+    }
+    return true;
+  };
+
   // Function to handle checkout button click
-  const handleCheckout = async () => {
+  const handleCheckout = async (e) => {
+    e.preventDefault();
+
+    if (!validateEmail()) {
+      return;
+    }
+
     console.log('Checkout button clicked!');
     console.log('Selected Dogs:', dogs);
     console.log('Selected Frequency:', frequency);
     console.log('Calculated Quote:', quote);
+    console.log('Email:', email);
 
     // Send data to Netlify function
     try {
+      const requestData = {
+        dogs: dogs,
+        frequency: frequency,
+        monthlyPrice: quote.monthly,
+        email: email
+      };
+
+      console.log('Sending data to checkout function:', requestData);
+
       const response = await fetch('/.netlify/functions/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          dogs: dogs,
-          frequency: frequency,
-          monthlyPrice: quote.monthly // Send calculated monthly price
-        }),
+        body: JSON.stringify(requestData),
       });
 
+      console.log('Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorText}`);
       }
 
-      const { url } = await response.json();
+      const responseData = await response.json();
+      console.log('Response data:', responseData);
+
+      if (!responseData.url) {
+        throw new Error('No checkout URL returned from server');
+      }
 
       // Redirect to Stripe Checkout
-      window.location.href = url;
-
+      window.location.href = responseData.url;
     } catch (error) {
       console.error('Failed to create checkout session:', error);
-      // TODO: Display an error message to the user
+      alert(`Error: ${error.message}. Please try again or contact support.`);
     }
   };
 
@@ -151,22 +184,45 @@ function Hero() {
             {frequency === 'bi' && (
               <>
                 <p>Your rate (every other week):</p>
-                {/* Base rate = monthly / 4 */}
                 <h2>${(quote.monthly / 2).toFixed(2)} / visit</h2>
               </>
             )}
             {frequency === 'mo' && (
               <>
                 <p>Your monthly rate:</p>
-                {/* Base rate = monthly / 4 */}
                 <h2>${(quote.monthly).toFixed(2)} / month</h2>
               </>
             )}
             <p>(Billed at ${quote.monthly} monthly)</p>
 
-            <button className="cta-button checkout-button" onClick={handleCheckout}>
-              Start My Trial Now
+            <div className="form-group">
+              <label htmlFor="email">Email Address*</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={email}
+                onChange={handleEmailChange}
+                placeholder="your@email.com"
+                required
+              />
+              {emailError && <span className="error-text">{emailError}</span>}
+            </div>
+
+            <button
+              className="cta-button checkout-button"
+              onClick={(e) => {
+                e.preventDefault(); // Prevent form submission
+                handleCheckout(e);
+              }}
+              type="button" // Change from default submit type
+            >
+              Proceed to Checkout
             </button>
+
+            <p className="checkout-note">
+              You'll enter your address and contact details in the next step.
+            </p>
           </div>
         )}
         {showPrice && quote.weekly <= 0 && (
