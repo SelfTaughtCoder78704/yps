@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { Buffer } from 'node:buffer';
 /* global process */
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -19,16 +20,18 @@ export const handler = async (event) => {
   let stripeEvent;
 
   try {
-    // IMPORTANT: Netlify Functions automatically parse JSON bodies
-    // But Stripe needs the raw body string for signature verification
-    // The rawBody field may not be available in all Netlify setups
+    // Netlify Functions often provide a base64 encoded body
+    let rawBody;
 
-    // We'll try a few different approaches
-    let rawBody = event.body;
-
-    // If the body is already parsed as JSON, stringify it back
-    if (typeof rawBody === 'object') {
-      rawBody = JSON.stringify(rawBody);
+    if (event.isBase64Encoded) {
+      // If base64 encoded, decode it
+      rawBody = Buffer.from(event.body, 'base64').toString();
+    } else if (typeof event.body === 'object') {
+      // If body is already parsed as JSON, stringify it
+      rawBody = JSON.stringify(event.body);
+    } else {
+      // Otherwise, use the body as-is
+      rawBody = event.body;
     }
 
     console.log('Webhook received. Signature:', sig ? 'Present' : 'Missing');

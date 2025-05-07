@@ -11,3 +11,11 @@ targetPort = 5173 # Default Vite port, adjust if different
 port = 8888
 # Make sure the Netlify CLI handles function requests
 framework = "#custom"
+
+[functions]
+node_bundler = "esbuild"
+
+# Add special handling for the webhook endpoint
+[[functions."webhook-handler"]]
+[functions."webhook-handler".environment]
+PRESERVE_BODY = "true"
