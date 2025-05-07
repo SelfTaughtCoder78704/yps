@@ -3,16 +3,15 @@ import { Buffer } from 'node:buffer';
 /* global process */
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Use either production or development webhook secret based on environment
-const isProd = process.env.CONTEXT === 'production' || process.env.NODE_ENV === 'production';
-const endpointSecret = isProd
-  ? process.env.STRIPE_WEBHOOK_SECRET_PROD
-  : process.env.STRIPE_WEBHOOK_SECRET;
+// Use production webhook secret directly for now
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET_PROD || process.env.STRIPE_WEBHOOK_SECRET;
 
-// Check if webhook secret is configured
-if (!endpointSecret) {
-  console.error(`${isProd ? 'Production' : 'Development'} webhook secret is not set!`);
-}
+// Log the environment for debugging
+console.log('Environment:', {
+  NODE_ENV: process.env.NODE_ENV,
+  CONTEXT: process.env.CONTEXT,
+  hasSecret: !!endpointSecret,
+});
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -23,27 +22,33 @@ export const handler = async (event) => {
   let stripeEvent;
 
   try {
-    // Netlify Functions often provide a base64 encoded body
+    // Explicitly log request details for troubleshooting
+    console.log('Webhook received. Signature:', sig ? 'Present' : 'Missing');
+    console.log('Headers:', JSON.stringify(event.headers));
+    console.log('isBase64Encoded:', event.isBase64Encoded);
+    console.log('Body type:', typeof event.body);
+
+    if (!endpointSecret) {
+      throw new Error('Webhook secret not configured. Please set STRIPE_WEBHOOK_SECRET_PROD environment variable.');
+    }
+
+    // Get raw body - try multiple approaches to handle different Netlify configurations
     let rawBody;
 
     if (event.isBase64Encoded) {
-      // If base64 encoded, decode it
-      rawBody = Buffer.from(event.body, 'base64').toString();
+      console.log('Using base64 decoded body');
+      rawBody = Buffer.from(event.body, 'base64').toString('utf8');
+    } else if (typeof event.body === 'string') {
+      console.log('Using string body directly');
+      rawBody = event.body;
     } else if (typeof event.body === 'object') {
-      // If body is already parsed as JSON, stringify it
+      console.log('Stringifying object body');
       rawBody = JSON.stringify(event.body);
     } else {
-      // Otherwise, use the body as-is
-      rawBody = event.body;
+      throw new Error(`Unexpected body type: ${typeof event.body}`);
     }
 
-    console.log('Webhook received. Signature:', sig ? 'Present' : 'Missing');
-
-    // Verify the event came from Stripe
-    if (!endpointSecret) {
-      throw new Error('Webhook secret not configured. Please set STRIPE_WEBHOOK_SECRET environment variable.');
-    }
-
+    // Try verifying with the exact signature and body
     stripeEvent = stripe.webhooks.constructEvent(
       rawBody,
       sig,
@@ -66,6 +71,7 @@ export const handler = async (event) => {
 
   // Handle the event
   console.log('Event type:', stripeEvent.type);
+  console.log('Event ID:', stripeEvent.id);
 
   // Simple database simulation - in production, use a real database
   const db = {
