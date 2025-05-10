@@ -1,11 +1,8 @@
 import Stripe from 'stripe';
+import { getStripeKey } from './utils/environment.js';
 /* global process */
 
-const stripeSecretKey = process.env.CONTEXT === 'production'
-  ? process.env.PROD_STRIPE_SECRET_KEY
-  : process.env.STRIPE_SECRET_KEY;
-
-const stripe = Stripe(stripeSecretKey);
+const stripe = Stripe(getStripeKey());
 
 // Admin password from environment variable
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'change-this-password';
@@ -81,34 +78,27 @@ export const handler = async (event) => {
           }
         }
 
-        // Format the result
         return {
           id: customer.id,
-          email: customer.email,
           name: customer.name,
+          email: customer.email,
           phone: customer.phone,
-          serviceAddress: customer.shipping?.address || {},
-          serviceFrequency: serviceDetails.frequency,
-          dogCount: serviceDetails.dogs,
-          nextServiceDate: serviceDetails.nextServiceDate,
-          status: serviceDetails.status
+          serviceAddress: customer.shipping?.address,
+          ...serviceDetails
         };
       })
     );
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store, max-age=0'
-      },
-      body: JSON.stringify(processedCustomers)
+      body: JSON.stringify(processedCustomers),
     };
+
   } catch (error) {
     console.error('Error fetching customers:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to fetch customers' })
+      body: JSON.stringify({ error: error.message })
     };
   }
 };

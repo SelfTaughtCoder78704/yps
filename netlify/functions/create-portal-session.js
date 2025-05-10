@@ -1,11 +1,8 @@
 import Stripe from 'stripe';
+import { getStripeKey } from './utils/environment.js';
 /* global process */
 
-const stripeSecretKey = process.env.CONTEXT === 'production'
-  ? process.env.PROD_STRIPE_SECRET_KEY
-  : process.env.STRIPE_SECRET_KEY;
-
-const stripe = Stripe(stripeSecretKey);
+const stripe = Stripe(getStripeKey());
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {

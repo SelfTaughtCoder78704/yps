@@ -1,26 +1,8 @@
-import Stripe from 'stripe'; // Use import
+import Stripe from 'stripe';
+import { getStripeKey } from './utils/environment.js';
 /* global process */
 
-// Add debug logging
-console.log('Environment variables:', {
-  DEPLOY_CONTEXT: process.env.DEPLOY_CONTEXT || process.env.CONTEXT,
-  NETLIFY_ENV: process.env.NETLIFY_ENV,
-  HAS_PROD_KEY: !!process.env.PROD_STRIPE_SECRET_KEY,
-  HAS_TEST_KEY: !!process.env.STRIPE_SECRET_KEY,
-});
-
-// Check if we're in production based on Netlify's environment variables
-const isProduction = (process.env.DEPLOY_CONTEXT || process.env.CONTEXT) === 'production';
-console.log('Is Production Environment:', isProduction);
-
-const stripeSecretKey = isProduction
-  ? process.env.PROD_STRIPE_SECRET_KEY
-  : process.env.STRIPE_SECRET_KEY;
-
-// Log which key we're using (first 8 chars only for security)
-console.log('Using Stripe key:', stripeSecretKey.substring(0, 8) + '...');
-
-const stripe = Stripe(stripeSecretKey);
+const stripe = Stripe(getStripeKey());
 
 // Use export const handler
 export const handler = async (event) => {

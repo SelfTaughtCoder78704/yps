@@ -2,23 +2,34 @@ import Stripe from 'stripe';
 import { Buffer } from 'node:buffer';
 /* global process */
 
+// Determine if we're in production using multiple environment checks
+const isProduction =
+  process.env.CONTEXT === 'production' ||
+  process.env.NETLIFY_ENV === 'production' ||
+  process.env.DEPLOY_CONTEXT === 'production';
+
 // Determine which key to use based on environment
-const stripeSecretKey = process.env.CONTEXT === 'production'
+const stripeSecretKey = isProduction
   ? process.env.PROD_STRIPE_SECRET_KEY
   : process.env.STRIPE_SECRET_KEY;
 
 const stripe = Stripe(stripeSecretKey);
 
 // Use production webhook secret in production, fallback to dev secret otherwise
-const endpointSecret = process.env.CONTEXT === 'production'
+const endpointSecret = isProduction
   ? process.env.STRIPE_WEBHOOK_SECRET_PROD
   : process.env.STRIPE_WEBHOOK_SECRET;
 
-// Log the environment for debugging
+// Enhanced environment logging
 console.log('Environment:', {
   CONTEXT: process.env.CONTEXT,
-  isProduction: process.env.CONTEXT === 'production',
+  NETLIFY_ENV: process.env.NETLIFY_ENV,
+  DEPLOY_CONTEXT: process.env.DEPLOY_CONTEXT,
+  isProduction,
   hasSecret: !!endpointSecret,
+  usingProdKey: isProduction,
+  hasTestKey: !!process.env.STRIPE_SECRET_KEY,
+  hasProdKey: !!process.env.PROD_STRIPE_SECRET_KEY
 });
 
 export const handler = async (event) => {
