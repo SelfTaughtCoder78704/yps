@@ -11,7 +11,7 @@ const stripe = Stripe(stripeSecretKey);
 
 // Use production webhook secret in production, fallback to dev secret otherwise
 const endpointSecret = process.env.CONTEXT === 'production'
-  ? process.env.PROD_STRIPE_WEBHOOK_SECRET
+  ? process.env.STRIPE_WEBHOOK_SECRET_PROD
   : process.env.STRIPE_WEBHOOK_SECRET;
 
 // Log the environment for debugging

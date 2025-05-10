@@ -1,6 +1,10 @@
 import Stripe from 'stripe'; // Use import
 /* global process */
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use environment variable!
+const stripeSecretKey = process.env.CONTEXT === 'production'
+  ? process.env.PROD_STRIPE_SECRET_KEY
+  : process.env.STRIPE_SECRET_KEY;
+
+const stripe = Stripe(stripeSecretKey);
 
 // Use export const handler
 export const handler = async (event) => {

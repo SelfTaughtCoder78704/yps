@@ -1,7 +1,13 @@
 import Stripe from 'stripe';
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+/* global process */
 
-export const handler = async (event, context) => {
+const stripeSecretKey = process.env.CONTEXT === 'production'
+  ? process.env.PROD_STRIPE_SECRET_KEY
+  : process.env.STRIPE_SECRET_KEY;
+
+const stripe = Stripe(stripeSecretKey);
+
+export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }

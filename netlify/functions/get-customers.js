@@ -1,6 +1,11 @@
 import Stripe from 'stripe';
 /* global process */
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+const stripeSecretKey = process.env.CONTEXT === 'production'
+  ? process.env.PROD_STRIPE_SECRET_KEY
+  : process.env.STRIPE_SECRET_KEY;
+
+const stripe = Stripe(stripeSecretKey);
 
 // Admin password from environment variable
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'change-this-password';
