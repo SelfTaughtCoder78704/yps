@@ -18,3 +18,13 @@ node_bundler = "esbuild"
 # Add special handling for the webhook endpoint
 [functions.webhook-handler]
 environment = {PRESERVE_BODY = "true"}
+
+# Production context settings
+[context.production]
+[context.production.environment]
+CONTEXT = "production"
+
+# Development context settings
+[context.dev]
+[context.dev.environment]
+CONTEXT = "dev"

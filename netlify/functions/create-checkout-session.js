@@ -1,10 +1,20 @@
 import Stripe from 'stripe'; // Use import
 /* global process */
+
+// Add debug logging
+console.log('Environment variables:', {
+  CONTEXT: process.env.CONTEXT,
+  HAS_PROD_KEY: !!process.env.PROD_STRIPE_SECRET_KEY,
+  HAS_TEST_KEY: !!process.env.STRIPE_SECRET_KEY,
+  USING_PROD: process.env.CONTEXT === 'production'
+});
+
 const stripeSecretKey = process.env.CONTEXT === 'production'
   ? process.env.PROD_STRIPE_SECRET_KEY
   : process.env.STRIPE_SECRET_KEY;
 
-console.log('Stripe secret key:', stripeSecretKey);
+// Log which key we're using (first 8 chars only for security)
+console.log('Using Stripe key:', stripeSecretKey.substring(0, 8) + '...');
 
 const stripe = Stripe(stripeSecretKey);
 
