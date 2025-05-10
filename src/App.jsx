@@ -28,7 +28,7 @@ const Message = ({ message, onClear }) => (
 );
 
 // Simple Success component
-const SuccessDisplay = ({ sessionId, onManageBilling }) => {
+const SuccessDisplay = ({ sessionId }) => {
   // Store session ID when showing success message
   useEffect(() => {
     if (sessionId) {
@@ -36,12 +36,16 @@ const SuccessDisplay = ({ sessionId, onManageBilling }) => {
     }
   }, [sessionId]);
 
+  const handleManageBilling = () => {
+    window.location.href = 'https://billing.stripe.com/p/login/7sIdTb0Q25N89TqdQQ';
+  };
+
   return (
     <section style={{ padding: '40px', textAlign: 'center' }}>
       <h2>Subscription Successful!</h2>
       <p>Thanks for joining YPS. Your subscription is now active.</p>
       <p>You can manage your billing and subscription details anytime:</p>
-      <button className="cta-button" onClick={onManageBilling}>
+      <button className="cta-button" onClick={handleManageBilling}>
         Manage Billing Information
       </button>
     </section>
@@ -107,31 +111,6 @@ function App() {
     window.history.replaceState(null, '', window.location.pathname);
   }
 
-  // Function to handle Manage Billing button click
-  const handleManageBilling = async () => {
-    if (!sessionId) {
-      setMessage("Error: Session ID not found.");
-      return;
-    }
-    try {
-      const response = await fetch('/.netlify/functions/create-portal-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ session_id: sessionId }),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const { url } = await response.json();
-      window.location.href = url; // Redirect to Stripe Portal
-    } catch (error) {
-      console.error('Failed to create portal session:', error);
-      setMessage("Could not open billing management. Please try again later or contact support.");
-    }
-  };
-
   // Render based on state
   let content;
 
@@ -146,7 +125,7 @@ function App() {
       </>
     );
   } else if (success && sessionId) {
-    content = <SuccessDisplay sessionId={sessionId} onManageBilling={handleManageBilling} />;
+    content = <SuccessDisplay sessionId={sessionId} />;
   } else if (message) {
     content = <Message message={message} onClear={clearStatus} />;
   } else {

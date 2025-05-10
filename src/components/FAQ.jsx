@@ -41,7 +41,7 @@ const faqData = [
   {
     id: 8,
     question: "Can I pause service for vacation or cancel anytime?",
-    answer: "Absolutely. Use the customer portal link in the site footer to skip weeks, pause a month, or cancel with no fees or hard feelings. You can also text us for help managing your subscription."
+    answer: "Absolutely. Log into your customer portal at billing.stripe.com/p/login/7sIdTb0Q25N89TqdQQ to manage your subscription. You can skip weeks, pause service, or cancel with no fees or hard feelings. You can also text us for help managing your subscription."
   }
 ];
 
