@@ -1,15 +1,24 @@
 import Stripe from 'stripe';
 import { Buffer } from 'node:buffer';
 /* global process */
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Use production webhook secret directly for now
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET_PROD || process.env.STRIPE_WEBHOOK_SECRET;
+// Determine which key to use based on environment
+const stripeSecretKey = process.env.NODE_ENV === 'production'
+  ? process.env.PROD_STRIPE_SECRET_KEY
+  : process.env.STRIPE_SECRET_KEY;
+
+const stripe = Stripe(stripeSecretKey);
+
+// Use production webhook secret in production, fallback to dev secret otherwise
+const endpointSecret = process.env.NODE_ENV === 'production'
+  ? process.env.PROD_STRIPE_WEBHOOK_SECRET
+  : process.env.STRIPE_WEBHOOK_SECRET;
 
 // Log the environment for debugging
 console.log('Environment:', {
   NODE_ENV: process.env.NODE_ENV,
   CONTEXT: process.env.CONTEXT,
+  isProduction: process.env.NODE_ENV === 'production',
   hasSecret: !!endpointSecret,
 });
 

@@ -34,7 +34,7 @@ function Pricing() {
         </table>
         <p className="pricing-note">We quote weekly for clarity, but bill just once per month (weekly rate × 4).</p>
         <div className="pricing-banner">
-          Half-price first clean – use code <strong>FRESHSTART</strong>
+          Get your first month free – use code <strong>FIRSTTIMEFREE</strong>
         </div>
       </div>
     </section>
