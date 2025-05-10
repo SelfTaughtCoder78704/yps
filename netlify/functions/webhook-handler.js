@@ -145,6 +145,46 @@ export const handler = async (event) => {
           // Store in our simulated database
           db.saveCustomer(customerData);
 
+          // Send SMS notification via OpenPhone
+          try {
+            const { OPENPHONE_API_KEY, OPENPHONE_PHONE_NUMBER_ID, OPENPHONE_FROM_NUMBER, MY_PERSONAL_PHONE_NUMBER } = process.env;
+
+            if (!OPENPHONE_API_KEY || !OPENPHONE_PHONE_NUMBER_ID || !OPENPHONE_FROM_NUMBER || !MY_PERSONAL_PHONE_NUMBER) {
+              console.error('OpenPhone environment variables not fully configured. SMS not sent.');
+            } else {
+              const messageContent = `New YPS Signup!\nName: ${customerData.name || 'N/A'}\nPhone: ${customerData.phone || 'N/A'}\nEmail: ${customerData.email || 'N/A'}\nAddress: ${customerData.serviceAddress?.line1 || 'N/A'}, ${customerData.serviceAddress?.city || 'N/A'}\nFrequency: ${customerData.serviceFrequency || 'N/A'}\nDog Count: ${customerData.dogCount || 'N/A'}`;
+
+              const openPhoneApiUrl = 'https://api.openphone.com/v1/messages';
+              const payload = {
+                content: messageContent,
+                phoneNumberId: OPENPHONE_PHONE_NUMBER_ID,
+                from: OPENPHONE_FROM_NUMBER,
+                to: [MY_PERSONAL_PHONE_NUMBER],
+              };
+
+              console.log('Attempting to send SMS via OpenPhone:', JSON.stringify(payload, null, 2));
+
+              const response = await fetch(openPhoneApiUrl, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${OPENPHONE_API_KEY}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+              });
+
+              if (response.ok) {
+                const responseData = await response.json();
+                console.log('SMS sent successfully via OpenPhone:', responseData);
+              } else {
+                const errorData = await response.text(); // Use .text() as error might not be JSON
+                console.error('Failed to send SMS via OpenPhone. Status:', response.status, 'Response:', errorData);
+              }
+            }
+          } catch (smsError) {
+            console.error('Error sending SMS via OpenPhone:', smsError);
+          }
+
           // In a real app, here you would:
           // 1. Store customer in a real database
           // 2. Send welcome email
