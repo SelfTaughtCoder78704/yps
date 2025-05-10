@@ -18,7 +18,7 @@ const stripe = Stripe(stripeSecretKey);
 // Use production webhook secret in production, fallback to dev secret otherwise
 const endpointSecret = isProduction
   ? process.env.STRIPE_WEBHOOK_SECRET_PROD
-  : process.env.STRIPE_WEBHOOK_SECRET;
+  : process.env.STRIPE_WEBHOOK_SECRET_DEV;
 
 // Enhanced environment logging
 console.log('Environment:', {
@@ -29,7 +29,9 @@ console.log('Environment:', {
   hasSecret: !!endpointSecret,
   usingProdKey: isProduction,
   hasTestKey: !!process.env.STRIPE_SECRET_KEY,
-  hasProdKey: !!process.env.PROD_STRIPE_SECRET_KEY
+  hasProdKey: !!process.env.PROD_STRIPE_SECRET_KEY,
+  hasDevWebhook: !!process.env.STRIPE_WEBHOOK_SECRET_DEV,
+  hasProdWebhook: !!process.env.STRIPE_WEBHOOK_SECRET_PROD
 });
 
 export const handler = async (event) => {
