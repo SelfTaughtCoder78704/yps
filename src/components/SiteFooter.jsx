@@ -19,6 +19,9 @@ function SiteFooter() {
           Manage Subscription / Customer Portal
         </button>
       </p>
+      <p>
+        <a href="/privacy.html" className="privacy-link">Privacy Policy</a>
+      </p>
     </footer>
   );
 }
