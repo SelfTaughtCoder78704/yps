@@ -3,13 +3,17 @@ import Stripe from 'stripe'; // Use import
 
 // Add debug logging
 console.log('Environment variables:', {
-  CONTEXT: process.env.CONTEXT,
+  DEPLOY_CONTEXT: process.env.DEPLOY_CONTEXT || process.env.CONTEXT,
+  NETLIFY_ENV: process.env.NETLIFY_ENV,
   HAS_PROD_KEY: !!process.env.PROD_STRIPE_SECRET_KEY,
   HAS_TEST_KEY: !!process.env.STRIPE_SECRET_KEY,
-  USING_PROD: process.env.CONTEXT === 'production'
 });
 
-const stripeSecretKey = process.env.CONTEXT === 'production'
+// Check if we're in production based on Netlify's environment variables
+const isProduction = (process.env.DEPLOY_CONTEXT || process.env.CONTEXT) === 'production';
+console.log('Is Production Environment:', isProduction);
+
+const stripeSecretKey = isProduction
   ? process.env.PROD_STRIPE_SECRET_KEY
   : process.env.STRIPE_SECRET_KEY;
 
