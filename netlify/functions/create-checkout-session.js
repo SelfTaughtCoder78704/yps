@@ -4,6 +4,8 @@ const stripeSecretKey = process.env.CONTEXT === 'production'
   ? process.env.PROD_STRIPE_SECRET_KEY
   : process.env.STRIPE_SECRET_KEY;
 
+console.log('Stripe secret key:', stripeSecretKey);
+
 const stripe = Stripe(stripeSecretKey);
 
 // Use export const handler
