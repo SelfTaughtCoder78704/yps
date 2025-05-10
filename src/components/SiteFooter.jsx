@@ -1,14 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 function SiteFooter() {
   const currentYear = new Date().getFullYear();
-  const portalLink = "https://billing.stripe.com/p/login/test_6oEcNl0jP0f2f5u9AA";
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handlePortalAccess = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/.netlify/functions/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ session_id: localStorage.getItem('checkout_session_id') }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create portal session');
+      }
+
+      const { url } = await response.json();
+      window.location.href = url;
+    } catch (error) {
+      console.error('Error accessing portal:', error);
+      alert('Please contact support for help accessing your account.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <footer className="site-footer">
       <p>&copy; {currentYear} YPS - Yard Poop Service. All Rights Reserved.</p>
       <p>
-        <a href={portalLink} target="_blank" rel="noopener noreferrer">Manage Subscription / Customer Portal</a>
+        <button
+          onClick={handlePortalAccess}
+          disabled={isLoading}
+          className="portal-link"
+        >
+          {isLoading ? 'Loading...' : 'Manage Subscription / Customer Portal'}
+        </button>
       </p>
     </footer>
   );

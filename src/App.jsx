@@ -28,17 +28,25 @@ const Message = ({ message, onClear }) => (
 );
 
 // Simple Success component
-const SuccessDisplay = ({ onManageBilling }) => (
-  <section style={{ padding: '40px', textAlign: 'center' }}>
-    <h2>Subscription Successful!</h2>
-    <p>Thanks for joining YPS. Your subscription is now active.</p>
-    <p>You can manage your billing and subscription details anytime:</p>
-    <button className="cta-button" onClick={onManageBilling}>
-      Manage Billing Information
-    </button>
-    {/* Optional: Add link back to main page or user dashboard later */}
-  </section>
-);
+const SuccessDisplay = ({ sessionId, onManageBilling }) => {
+  // Store session ID when showing success message
+  useEffect(() => {
+    if (sessionId) {
+      localStorage.setItem('checkout_session_id', sessionId);
+    }
+  }, [sessionId]);
+
+  return (
+    <section style={{ padding: '40px', textAlign: 'center' }}>
+      <h2>Subscription Successful!</h2>
+      <p>Thanks for joining YPS. Your subscription is now active.</p>
+      <p>You can manage your billing and subscription details anytime:</p>
+      <button className="cta-button" onClick={onManageBilling}>
+        Manage Billing Information
+      </button>
+    </section>
+  );
+};
 
 function App() {
   // Navigation links data
@@ -67,8 +75,13 @@ function App() {
     }
 
     if (query.get('success')) {
+      const sessionId = query.get('session_id');
       setSuccess(true);
-      setSessionId(query.get('session_id'));
+      setSessionId(sessionId);
+      // Store session ID for later portal access
+      if (sessionId) {
+        localStorage.setItem('checkout_session_id', sessionId);
+      }
       setMessage(''); // Clear any potential cancelled message
     }
     if (query.get('canceled')) {
@@ -133,7 +146,7 @@ function App() {
       </>
     );
   } else if (success && sessionId) {
-    content = <SuccessDisplay onManageBilling={handleManageBilling} />;
+    content = <SuccessDisplay sessionId={sessionId} onManageBilling={handleManageBilling} />;
   } else if (message) {
     content = <Message message={message} onClear={clearStatus} />;
   } else {
