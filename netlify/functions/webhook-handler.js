@@ -167,7 +167,7 @@ export const handler = async (event) => {
               const response = await fetch(openPhoneApiUrl, {
                 method: 'POST',
                 headers: {
-                  'Authorization': `Bearer ${OPENPHONE_API_KEY}`,
+                  'Authorization': OPENPHONE_API_KEY,
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
